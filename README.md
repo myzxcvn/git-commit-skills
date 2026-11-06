@@ -1,10 +1,13 @@
-# Git Commit Skills
+# Agent Skills
 
-用于按 `[标签] 简短摘要` 格式撰写和检查中文 Git 提交消息的 Codex 技能，
-并在明确授权范围内完成本地提交和推送。
+本仓库维护多个可独立安装的 Codex / Agent Skills：
 
-技能入口：[skills/git-commit/SKILL.md](skills/git-commit/SKILL.md)。
-完整消息规则只在该文件维护；目标项目自身的 `AGENTS.md` 优先。
+- [git-commit](skills/git-commit/SKILL.md)：中文 Git 提交消息规范、提交与推送核验。
+- [natural-writing](skills/natural-writing/SKILL.md)：让写作更自然，减少套话和机械表达。
+- [document-writing](skills/document-writing/SKILL.md)：从材料核实、结构设计到撰写、维护和评审完整文档。
+
+以下“安装”“使用”“更新与卸载”等章节先介绍 `git-commit`；
+其他技能的安装说明见文末对应章节。
 
 ## 安装
 
@@ -167,6 +170,40 @@ ln -s "$PWD/skills/natural-writing" "$HOME/.agents/skills/natural-writing"
 和 [改写示例](skills/natural-writing/references/examples.md)。
 详细安装、更新与卸载规则可参考上方的 git-commit 技能说明，
 并将目录名替换为 `natural-writing`。
+
+## 其他技能：文档写作（document-writing）
+
+新技能入口：[document-writing/SKILL.md](skills/document-writing/SKILL.md)。
+
+它负责创建、补全、维护和评审文档，覆盖技术方案、架构设计、
+README、API/协议说明、ADR/RFC、操作手册、测试方案和项目报告。
+与侧重语言润色的 `natural-writing` 不同，`document-writing` 重点管理
+事实核查、文档结构、技术契约、可执行示例和交付质量。
+
+通过 Codex 技能安装器安装：
+
+```text
+使用 $skill-installer 从 myzxcvn/git-commit-skills 仓库安装 skills/document-writing
+```
+
+手动安装时，克隆仓库后在仓库根目录运行（先确认目标位置不存在）：
+
+```bash
+mkdir -p "$HOME/.agents/skills"
+ln -s "$PWD/skills/document-writing" "$HOME/.agents/skills/document-writing"
+```
+
+使用示例：
+
+```text
+使用 $document-writing 分析当前仓库并撰写 docs/architecture.md。
+重点说明模块职责、数据流、接口、异常处理和测试方案，不修改程序代码。
+```
+
+配套资料：
+[文档类型指南](skills/document-writing/references/document-types.md)、
+[可裁剪模板](skills/document-writing/references/templates.md)、
+[质量检查清单](skills/document-writing/references/review-checklist.md)。
 
 ## 许可证
 
