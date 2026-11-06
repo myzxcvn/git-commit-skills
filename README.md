@@ -138,6 +138,36 @@ python3 "${CODEX_HOME:-$HOME/.codex}/skills/.system/skill-creator/scripts/quick_
 反馈问题或提出改进建议。请说明使用场景、预期结果和实际结果，
 并提供必要的脱敏示例。
 
+## 其他技能：自然写作（natural-writing）
+
+仓库还提供独立的 [natural-writing 技能](skills/natural-writing/SKILL.md)，
+用于将中文技术方案、README、博客、工作汇报等内容改写得更自然，
+减少套话和机械分点，同时保留原始事实、专业术语及技术限定条件。
+
+通过 Codex 的技能安装器安装：
+
+```text
+使用 $skill-installer 从 myzxcvn/git-commit-skills 仓库安装 skills/natural-writing
+```
+
+已手动克隆仓库时，也可以创建独立的技能链接（先确认目标位置不存在）：
+
+```bash
+mkdir -p "$HOME/.agents/skills"
+ln -s "$PWD/skills/natural-writing" "$HOME/.agents/skills/natural-writing"
+```
+
+调用示例：
+
+```text
+使用 $natural-writing 润色这段架构设计文档，保留接口名和技术结论。
+```
+
+技能包含 [文体指南](skills/natural-writing/references/style-guide.md)
+和 [改写示例](skills/natural-writing/references/examples.md)。
+详细安装、更新与卸载规则可参考上方的 git-commit 技能说明，
+并将目录名替换为 `natural-writing`。
+
 ## 许可证
 
 本项目采用 MIT 许可证，详见 [LICENSE](LICENSE)。
