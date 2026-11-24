@@ -1,210 +1,87 @@
 # Agent Skills
 
-本仓库维护多个可独立安装的 Codex / Agent Skills：
+三个可独立安装的 Codex / Agent Skills，无额外运行时依赖。
 
-- [git-commit](skills/git-commit/SKILL.md)：中文 Git 提交消息规范、提交与推送核验。
-- [natural-writing](skills/natural-writing/SKILL.md)：让写作更自然，减少套话和机械表达。
-- [document-writing](skills/document-writing/SKILL.md)：从材料核实、结构设计到撰写、维护和评审完整文档。
-
-以下“安装”“使用”“更新与卸载”等章节先介绍 `git-commit`；
-其他技能的安装说明见文末对应章节。
+| Skill | 用途 |
+| --- | --- |
+| [git-commit](skills/git-commit/SKILL.md) | 自然简洁的 Git 提交消息、原子提交及安全推送 |
+| [natural-writing](skills/natural-writing/SKILL.md) | 润色文字，保留事实、术语和原意 |
+| [document-writing](skills/document-writing/SKILL.md) | 基于事实与源码编写、维护和评审工程文档 |
 
 ## 安装
 
-选择一种安装方式即可。安装前检查是否已有名为 `git-commit` 的技能，
-保留已有修改，避免重复安装或覆盖。
+任选一种方式。安装前检查目标位置，不覆盖已有技能或本地修改。
 
-### 使用安装器
+### Codex 安装器
 
-在 Codex 中输入：
+在 Codex 中输入以下指令，按需选择技能：
 
 ```text
-使用 $skill-installer 从 myzxcvn/git-commit-skills 仓库安装 skills/git-commit
+使用 $skill-installer 从 myzxcvn/git-commit-skills 安装 skills/git-commit
+使用 $skill-installer 从 myzxcvn/git-commit-skills 安装 skills/natural-writing
+使用 $skill-installer 从 myzxcvn/git-commit-skills 安装 skills/document-writing
 ```
 
-### 手动安装
+### 手动安装（Linux / macOS）
 
-克隆仓库，并将技能链接到用户技能目录。以下命令适用于 Linux/macOS 的 Bash 环境，
-要求已安装 Git，且克隆目录和目标技能路径均不存在：
+在尚不存在同名克隆目录的位置执行：
 
 ```bash
 git clone https://github.com/myzxcvn/git-commit-skills.git
 cd git-commit-skills
 mkdir -p "$HOME/.agents/skills"
-ln -s "$PWD/skills/git-commit" "$HOME/.agents/skills/git-commit"
+for skill in git-commit natural-writing document-writing; do
+    target="$HOME/.agents/skills/$skill"
+    if [ -e "$target" ] || [ -L "$target" ]; then
+        printf 'Skip existing: %s\n' "$target"
+    else
+        ln -s "$PWD/skills/$skill" "$target"
+    fi
+done
 ```
 
-保留克隆目录，符号链接需要通过它读取技能内容。
-
-<details>
-<summary>兼容使用 .codex/skills 的环境</summary>
-
-如果当前 Codex 环境通过 `${CODEX_HOME:-$HOME/.codex}/skills` 管理用户技能，
-在克隆仓库并进入目录后，用以下两行替代上面的目录创建和链接命令。
-只选择一个安装位置：
-
-```bash
-mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
-ln -s "$PWD/skills/git-commit" "${CODEX_HOME:-$HOME/.codex}/skills/git-commit"
-```
-
-</details>
-
-若新技能没有出现，重启 Codex 后重试。
-技能目录结构、符号链接支持及发现行为参见
-[OpenAI 官方文档](https://learn.chatgpt.com/docs/build-skills)。
+只需要某个技能时，将循环列表改为对应名称。保留克隆目录供符号链接读取。
+兼容旧环境时，可将上述安装目录统一替换为 `${CODEX_HOME:-$HOME/.codex}/skills`，不要重复安装。
+如果技能未出现，重启 Codex。技能发现规则参见 [OpenAI 文档](https://learn.chatgpt.com/docs/build-skills)。
 
 ## 使用
 
-只生成消息，不修改 Git 状态：
-
 ```text
 使用 $git-commit 为当前暂存区生成提交消息，不执行提交。
+使用 $git-commit 检查本次改动，验证后完成本地提交。
+使用 $git-commit 提交本次改动，并推送到 origin 对应分支。
+使用 $natural-writing 润色这段技术说明，保留原意和术语。
+使用 $document-writing 基于源码编写 docs/architecture.md，不修改程序代码。
 ```
 
-完成本地提交：
-
-```text
-使用 $git-commit 检查当前任务改动，完成必要验证并提交。
-```
-
-明确授权提交并推送：
-
-```text
-使用 $git-commit 提交当前任务改动，并推送到当前分支对应的 origin 分支。
-```
+Git 提交不默认推送；推送需明确授权并核对范围。写作任务不自动提交或推送。
+具体项目的格式、分支、构建与验证规则优先，不能扩大用户授权。
 
 ## 更新与卸载
 
-### 手动链接安装
-
-更新时，进入安装时保留的仓库克隆目录，运行：
-
-```bash
-git pull --ff-only
-```
-
-符号链接会读取更新后的内容。如果存在本地修改或分支分歧，先检查并处理，
-保留需要的修改。
-
-卸载时，先检查安装路径：
-
-```bash
-ls -ld "$HOME/.agents/skills/git-commit"
-```
-
-确认它是指向本仓库的符号链接后，仅移除该链接：
-
-```bash
-test -L "$HOME/.agents/skills/git-commit" && unlink "$HOME/.agents/skills/git-commit"
-```
-
-这会保留仓库克隆目录。使用兼容路径安装时，将上述路径替换为实际安装位置。
-
-### 安装器安装
-
-安装器安装的是独立副本，更新其他克隆目录不会更新该副本。
-以安装器输出的路径为准，先检查并保存本地修改，再将旧副本移出技能目录，
-重新运行安装命令。备份应放在技能扫描目录之外。
-
-卸载时，确认实际安装目录中的 `SKILL.md` 对应本技能，再移除该技能目录。
-更新或卸载后若 Codex 仍显示旧内容，重启后重试。
+符号链接安装：在原克隆目录执行 `git pull --ff-only`。若存在本地修改或分歧，先保留并处理，不强制覆盖。
+卸载时先用 `ls -ld` 核对对应技能路径确为指向本仓库的符号链接，再用 `unlink` 移除链接，保留克隆目录。
+安装器安装的是独立副本；更新时先备份已有修改，将旧副本移出技能扫描目录，再重新安装。卸载前核对实际安装位置和技能身份。必要时重启 Codex。
 
 ## 开发与验证
 
-修改文档或技能后，在本仓库根目录检查差异格式：
+维护规则见 [AGENTS.md](AGENTS.md)。在仓库根目录执行：
 
 ```bash
+python3 scripts/validate-skills.py
 git diff --check
 ```
 
-结构校验是面向维护者的可选步骤，使用技能时无需执行。
-如果本机安装了 Codex 内置 `skill-creator`，且以下脚本路径存在，可运行：
+静态验证要求 Python 3.10+，仅使用标准库，检查本仓库 Skill 元数据、Markdown 围栏、本地链接和评测定义。
+[GitHub Actions 工作流](.github/workflows/validate.yml) 在 push 和 PR 时执行静态检查。
+这些检查不代表实际 Agent 行为正确；行为评测见 [evals/README.md](evals/README.md)，需单独构建场景并运行模型。
 
-```bash
-python3 "${CODEX_HOME:-$HOME/.codex}/skills/.system/skill-creator/scripts/quick_validate.py" \
-  skills/git-commit
-```
+## 参考资料
 
-该命令需要 Python 3 和 PyYAML；预期输出 `Skill is valid!`。
-此检查验证技能结构和元数据，不代表已验证模型在真实仓库中的所有提交行为。
-本项目不附带自动提交脚本或 Git hook，也未配置 GitHub Actions。
+- git-commit：[提交示例](skills/git-commit/references/examples.md)、[Git 安全指南](skills/git-commit/references/git-safety.md)
+- natural-writing：[文体指南](skills/natural-writing/references/style-guide.md)、[改写示例](skills/natural-writing/references/examples.md)
+- document-writing：[文档类型](skills/document-writing/references/document-types.md)、[模板](skills/document-writing/references/templates.md)、[检查清单](skills/document-writing/references/review-checklist.md)
 
-## 适用范围
+欢迎通过 [GitHub Issues](https://github.com/myzxcvn/git-commit-skills/issues) 提供脱敏的问题描述和复现示例。
 
-本技能提供提交消息格式、任务范围判断、暂存核对和推送核验指引。
-具体项目的分支约定、构建工具和验证要求以目标仓库的规则为准。
-
-## 问题反馈
-
-欢迎通过 [GitHub Issues](https://github.com/myzxcvn/git-commit-skills/issues)
-反馈问题或提出改进建议。请说明使用场景、预期结果和实际结果，
-并提供必要的脱敏示例。
-
-## 其他技能：自然写作（natural-writing）
-
-仓库还提供独立的 [natural-writing 技能](skills/natural-writing/SKILL.md)，
-用于将中文技术方案、README、博客、工作汇报等内容改写得更自然，
-减少套话和机械分点，同时保留原始事实、专业术语及技术限定条件。
-
-通过 Codex 的技能安装器安装：
-
-```text
-使用 $skill-installer 从 myzxcvn/git-commit-skills 仓库安装 skills/natural-writing
-```
-
-已手动克隆仓库时，也可以创建独立的技能链接（先确认目标位置不存在）：
-
-```bash
-mkdir -p "$HOME/.agents/skills"
-ln -s "$PWD/skills/natural-writing" "$HOME/.agents/skills/natural-writing"
-```
-
-调用示例：
-
-```text
-使用 $natural-writing 润色这段架构设计文档，保留接口名和技术结论。
-```
-
-技能包含 [文体指南](skills/natural-writing/references/style-guide.md)
-和 [改写示例](skills/natural-writing/references/examples.md)。
-详细安装、更新与卸载规则可参考上方的 git-commit 技能说明，
-并将目录名替换为 `natural-writing`。
-
-## 其他技能：文档写作（document-writing）
-
-新技能入口：[document-writing/SKILL.md](skills/document-writing/SKILL.md)。
-
-它负责创建、补全、维护和评审文档，覆盖技术方案、架构设计、
-README、API/协议说明、ADR/RFC、操作手册、测试方案和项目报告。
-与侧重语言润色的 `natural-writing` 不同，`document-writing` 重点管理
-事实核查、文档结构、技术契约、可执行示例和交付质量。
-
-通过 Codex 技能安装器安装：
-
-```text
-使用 $skill-installer 从 myzxcvn/git-commit-skills 仓库安装 skills/document-writing
-```
-
-手动安装时，克隆仓库后在仓库根目录运行（先确认目标位置不存在）：
-
-```bash
-mkdir -p "$HOME/.agents/skills"
-ln -s "$PWD/skills/document-writing" "$HOME/.agents/skills/document-writing"
-```
-
-使用示例：
-
-```text
-使用 $document-writing 分析当前仓库并撰写 docs/architecture.md。
-重点说明模块职责、数据流、接口、异常处理和测试方案，不修改程序代码。
-```
-
-配套资料：
-[文档类型指南](skills/document-writing/references/document-types.md)、
-[可裁剪模板](skills/document-writing/references/templates.md)、
-[质量检查清单](skills/document-writing/references/review-checklist.md)。
-
-## 许可证
-
-本项目采用 MIT 许可证，详见 [LICENSE](LICENSE)。
+许可证：[MIT](LICENSE)。
